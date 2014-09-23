@@ -49,10 +49,12 @@ function cmb2_post_search_render_js(  $cmb_id, $object_id, $object_type, $cmb ) 
 			'error' : '<?php _e( 'An error has occurred. Please reload the page and try again.' ); ?>'
 		}
 
-		var $input = $( '.cmb-type-post-search-text .cmb-td input[type="text"]' ).after( '<div title="<?php _e( 'Find Posts or Pages' ); ?>" style="color: #999;margin: .3em 0 0 2px; cursor: pointer;" class="dashicons dashicons-search"></div>');
+		$( '.cmb-type-post-search-text .cmb-td input[type="text"]' ).after( '<div title="<?php _e( 'Find Posts or Pages' ); ?>" style="color: #999;margin: .3em 0 0 2px; cursor: pointer;" class="dashicons dashicons-search"></div>');
 		var $search = $( '.cmb-type-post-search-text .cmb-td .dashicons-search' ).on( 'click', openSearch );
+		var $input;
 
 		function openSearch() {
+			$input = $(this).parents( '.cmb-type-post-search-text' ).find( '.cmb-td input[type="text"]' );
 			if ( window.findPosts ) {
 				window.findPosts.open();
 			}
