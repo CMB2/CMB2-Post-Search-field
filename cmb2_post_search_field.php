@@ -49,9 +49,24 @@ function cmb2_post_search_render_js(  $cmb_id, $object_id, $object_type, $cmb ) 
 			'error' : '<?php _e( 'An error has occurred. Please reload the page and try again.' ); ?>'
 		}
 
+		var $input = $( '.cmb-type-post-search-text .cmb-td input[type="text"]' ).after( '<div title="<?php _e( 'Find Posts or Pages' ); ?>" style="color: #999;margin: .3em 0 0 2px; cursor: pointer;" class="dashicons dashicons-search"></div>');
+		var $search = $( '.cmb-type-post-search-text .cmb-td .dashicons-search' ).on( 'click', openSearch );
+
 		function openSearch() {
 			if ( window.findPosts ) {
 				window.findPosts.open();
+			}
+		}
+
+		function closeSearch() {
+			if ( window.findPosts ) {
+				window.findPosts.close();
+			}
+		}
+
+		function doSearch() {
+			if ( window.findPosts ) {
+				window.findPosts.send();
 			}
 		}
 
@@ -61,7 +76,7 @@ function cmb2_post_search_render_js(  $cmb_id, $object_id, $object_type, $cmb ) 
 			var $checked = $( '#find-posts-response input[type="radio"]:checked' );
 
 			if ( ! $checked.length ) {
-				window.findPosts.close();
+				closeSearch();
 				return;
 			}
 
@@ -69,15 +84,28 @@ function cmb2_post_search_render_js(  $cmb_id, $object_id, $object_type, $cmb ) 
 			var existing = $input.val();
 			existing = existing ? existing + ', ' : '';
 			$input.val( existing + selected );
-			window.findPosts.close();
+			closeSearch();
 		}
-
-		var $input = $( '[name="_msft_newscenter_curated_archive_ids"]' ).on( 'click', openSearch );
-
-		$('#find-posts-submit').on( 'click', overrideSearchHandler );
 
 		// JS needed for modal
 		$.getScript( '<?php echo admin_url( "/js/media.js" ); ?>' );
+
+		$( '#find-posts' )
+			.on( 'keypress', '.find-box-search :input', function( evt ) {
+				if ( 13 == evt.which ) {
+					doSearch();
+					return false;
+				}
+			})
+			.on( 'click', '#find-posts-search', doSearch )
+			.on( 'click', '#find-posts-close', closeSearch )
+			.on( 'click', '#find-posts-submit', overrideSearchHandler );
+
+		// Enable whole row to be clicked
+		$( '.find-box-inside' ).on( 'click', 'tr', function() {
+			$( this ).find( '.found-radio input' ).prop( 'checked', true );
+		});
+
 
 	});
 	</script>
