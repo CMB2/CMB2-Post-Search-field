@@ -47,9 +47,10 @@ function cmb2_post_search_render_js(  $cmb_id, $object_id, $object_type, $cmb ) 
 	jQuery(document).ready(function($){
 		'use strict';
 
-		window.cmb2_post_search_field_l10n = window.cmb2_post_search_field_l10n || {
-			'error' : '<?php _e( 'An error has occurred. Please reload the page and try again.' ); ?>'
-		}
+		var l10n = {
+			'error' : '<?php _e( 'An error has occurred. Please reload the page and try again.' ); ?>',
+			'find' : '<?php _e( 'Find Posts or Pages' ); ?>'
+		};
 
 
 		var searchView = window.Backbone.View.extend({
@@ -64,8 +65,6 @@ function cmb2_post_search_render_js(  $cmb_id, $object_id, $object_type, $cmb ) 
 				'click #find-posts-submit'  : 'selectPost',
 				'click #find-posts-search'  : 'send',
 				'click #find-posts-close'   : 'close',
-				// Enable whole row to be clicked
-				'click .find-box-inside tr' : 'clickRow',
 			},
 
 			initialize: function() {
@@ -73,8 +72,6 @@ function cmb2_post_search_render_js(  $cmb_id, $object_id, $object_type, $cmb ) 
 				this.$input    = this.$el.find( '#find-posts-input' );
 				this.$response = this.$el.find( '#find-posts-response' );
 				this.$overlay  = $( '.ui-find-overlay' );
-				console.log( 'this.$overlay', this.$overlay.length );
-
 
 				this.listenTo( this, 'open', this.open );
 				this.listenTo( this, 'close', this.close );
@@ -98,6 +95,11 @@ function cmb2_post_search_render_js(  $cmb_id, $object_id, $object_type, $cmb ) 
 
 				this.$input.focus();
 
+				if ( ! this.$overlay.length ) {
+					$( 'body' ).append( '<div class="ui-find-overlay"></div>' );
+					this.$overlay  = $( '.ui-find-overlay' );
+				}
+
 				this.$overlay.show();
 
 				// Pull some results up by default
@@ -113,126 +115,66 @@ function cmb2_post_search_render_js(  $cmb_id, $object_id, $object_type, $cmb ) 
 				}
 			},
 
-			clickRow: function( evt ) {
-				$( evt.currentTarget ).find( '.found-radio input' ).prop( 'checked', true );
-			},
-
 			send: function() {
 
-				var _this = this;
-				_this.$spinner.show();
+				var search = this;
+				search.$spinner.show();
 
 				$.ajax( ajaxurl, {
 					type     : 'POST',
 					dataType : 'json',
 					data     : {
-						ps: _this.$input.val(),
+						ps: search.$input.val(),
 						action: 'find_posts',
 						_ajax_nonce: $('#_ajax_nonce').val()
 					}
 				}).always( function() {
 
-					_this.$spinner.hide();
+					search.$spinner.hide();
 
 				}).done( function( response ) {
 
 					if ( ! response.success ) {
-						_this.$response.text( cmb2_post_search_field_l10n.error );
+						search.$response.text( l10n.error );
 					}
 
-					var data = response.data.replace( '"radio"', '"checkbox"' );
-
-
-					console.log( 'data', data.search( 'type="radio"' ) );
-					_this.$response.html( data );
+					var data = response.data.replace( /type="radio"/gi, 'type="checkbox"' );
+					search.$response.html( data );
 
 				}).fail( function() {
-					_this.$response.text( cmb2_post_search_field_l10n.error );
+					search.$response.text( l10n.error );
 				});
 			},
 
 			selectPost: function( evt ) {
 				evt.preventDefault();
 
-				var $checked = $( '#find-posts-response input[type="radio"]:checked' );
+				var checked = $( '#find-posts-response input[type="checkbox"]:checked' ).map(function() { return this.value; }).get();
 
-				if ( ! $checked.length ) {
+				if ( ! checked.length ) {
 					this.close();
 					return;
 				}
 
-				var selected = $checked.val();
 				var existing = this.$idInput.val();
 				existing = existing ? existing + ', ' : '';
-				this.$idInput.val( existing + selected );
+				this.$idInput.val( existing + checked.join( ', ' ) );
 
 				this.close();
 			},
 
 		});
 
-		var search = new searchView();
+		window.cmb2_post_search = new searchView();
 
 
-		// function closeSearch() {
-		// 	if ( window.findPosts ) {
-		// 		window.findPosts.close();
-		// 	}
-		// }
-
-		// function doSearch() {
-		// 	if ( window.findPosts ) {
-		// 		window.findPosts.send();
-		// 	}
-		// }
-
-		// function overrideSearchHandler( evt ) {
-		// 	evt.preventDefault();
-
-		// 	var $checked = $( '#find-posts-response input[type="radio"]:checked' );
-
-		// 	if ( ! $checked.length ) {
-		// 		closeSearch();
-		// 		return;
-		// 	}
-
-		// 	var selected = $checked.val();
-		// 	var existing = $input.val();
-		// 	existing = existing ? existing + ', ' : '';
-		// 	$input.val( existing + selected );
-		// 	closeSearch();
-		// }
-
-
-
-		// // JS needed for modal
-		// $.getScript( '<?php echo admin_url( "/js/media.js" ); ?>' );
-
-		// $( '#find-posts' )
-		// 	.on( 'keypress', '.find-box-search :input', function( evt ) {
-		// 		if ( 13 == evt.which ) {
-		// 			doSearch();
-		// 			return false;
-		// 		}
-		// 	})
-		// 	.on( 'click', '#find-posts-search', doSearch )
-		// 	.on( 'click', '#find-posts-close', closeSearch )
-		// 	.on( 'click', '#find-posts-submit', overrideSearchHandler )
-		// 	// Enable whole row to be clicked
-		// 	.on( 'click', 'tr', function() {
-		// 		$( this ).find( '.found-radio input' ).prop( 'checked', true );
-		// 	});
-
-
-		$( '.cmb-type-post-search-text .cmb-td input[type="text"]' ).after( '<div title="<?php _e( 'Find Posts or Pages' ); ?>" style="color: #999;margin: .3em 0 0 2px; cursor: pointer;" class="dashicons dashicons-search"></div>');
+		$( '.cmb-type-post-search-text .cmb-td input[type="text"]' ).after( '<div title="'+ l10n.find +'" style="color: #999;margin: .3em 0 0 2px; cursor: pointer;" class="dashicons dashicons-search"></div>');
 		$( '.cmb-type-post-search-text .cmb-td .dashicons-search' ).on( 'click', openSearch );
 
 		function openSearch( evt ) {
-			search.$idInput = $( evt.currentTarget ).parents( '.cmb-type-post-search-text' ).find( '.cmb-td input[type="text"]' );
-			search.trigger( 'open' );
+			window.cmb2_post_search.$idInput = $( evt.currentTarget ).parents( '.cmb-type-post-search-text' ).find( '.cmb-td input[type="text"]' );
+			window.cmb2_post_search.trigger( 'open' );
 		}
-
-
 
 
 	});
