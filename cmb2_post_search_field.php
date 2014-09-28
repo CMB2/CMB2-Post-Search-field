@@ -5,7 +5,7 @@ Plugin URI: http://webdevstudios.com
 Description: Custom field for CMB2 which adds a post-search dialog for searching/attaching other post IDs
 Author: WebDevStudios
 Author URI: http://webdevstudios.com
-Version: 1.0.0
+Version: 0.1.1
 License: GPLv2
 */
 
@@ -54,10 +54,11 @@ function cmb2_post_search_render_js(  $cmb_id, $object_id, $object_type, $cmb ) 
 
 
 		var searchView = window.Backbone.View.extend({
-			el: '#find-posts',
-			overlaySet: false,
-			$overlay : false,
-			$idInput : false,
+			el         : '#find-posts',
+			overlaySet : false,
+			$overlay   : false,
+			$idInput   : false,
+			$checked   : false,
 
 			events : {
 				'keypress .find-box-search :input' : 'maybeStartSearch',
@@ -124,9 +125,10 @@ function cmb2_post_search_render_js(  $cmb_id, $object_id, $object_type, $cmb ) 
 					type     : 'POST',
 					dataType : 'json',
 					data     : {
-						ps: search.$input.val(),
-						action: 'find_posts',
-						_ajax_nonce: $('#_ajax_nonce').val()
+						ps               : search.$input.val(),
+						action           : 'find_posts',
+						cmb2_post_search : true,
+						_ajax_nonce      : $('#_ajax_nonce').val()
 					}
 				}).always( function() {
 
@@ -149,19 +151,24 @@ function cmb2_post_search_render_js(  $cmb_id, $object_id, $object_type, $cmb ) 
 			selectPost: function( evt ) {
 				evt.preventDefault();
 
-				var checked = $( '#find-posts-response input[type="checkbox"]:checked' ).map(function() { return this.value; }).get();
+				this.$checked = $( '#find-posts-response input[type="checkbox"]:checked' );
+				var checked   = this.$checked.map(function() { return this.value; }).get();
 
 				if ( ! checked.length ) {
 					this.close();
 					return;
 				}
 
+				this.handleSelected( checked );
+			},
+
+			handleSelected: function( checked ) {
 				var existing = this.$idInput.val();
 				existing = existing ? existing + ', ' : '';
 				this.$idInput.val( existing + checked.join( ', ' ) );
 
 				this.close();
-			},
+			}
 
 		});
 
