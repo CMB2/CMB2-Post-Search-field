@@ -15,6 +15,11 @@ function cmb2_post_search_render_field( $field, $field_escaped_value, $field_obj
 add_action( 'cmb2_render_post_search_text', 'cmb2_post_search_render_field', 10, 5 );
 
 function cmb2_post_search_render_js(  $cmb_id, $object_id, $object_type, $cmb ) {
+	static $rendered;
+
+	if ( $rendered ) {
+		return;
+	}
 
 	$fields = $cmb->prop( 'fields' );
 
@@ -174,8 +179,8 @@ function cmb2_post_search_render_js(  $cmb_id, $object_id, $object_type, $cmb ) 
 
 		window.cmb2_post_search = new searchView();
 
-
 		$( '.cmb-type-post-search-text .cmb-td input[type="text"]' ).after( '<div title="'+ l10n.find +'" style="color: #999;margin: .3em 0 0 2px; cursor: pointer;" class="dashicons dashicons-search"></div>');
+
 		$( '.cmb-type-post-search-text .cmb-td .dashicons-search' ).on( 'click', openSearch );
 
 		function openSearch( evt ) {
@@ -187,5 +192,7 @@ function cmb2_post_search_render_js(  $cmb_id, $object_id, $object_type, $cmb ) 
 	});
 	</script>
 	<?php
+
+	$rendered = true;
 }
 add_action( 'cmb2_after_form', 'cmb2_post_search_render_js', 10, 4 );
