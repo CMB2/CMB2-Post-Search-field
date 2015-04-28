@@ -5,12 +5,18 @@ Plugin URI: http://webdevstudios.com
 Description: Custom field for CMB2 which adds a post-search dialog for searching/attaching other post IDs
 Author: WebDevStudios
 Author URI: http://webdevstudios.com
-Version: 0.1.1
+Version: 0.2.0
 License: GPLv2
 */
 
 function cmb2_post_search_render_field( $field, $field_escaped_value, $field_object_id, $field_object_type, $field_type ) {
-	echo $field_type->text();
+
+	$select_type = $field->args( 'select_type' );
+
+	echo $field_type->input( array(
+		'data-posttype'   => $field->args( 'post_type' ),
+		'data-selecttype' => 'radio' == $select_type ? 'radio' : 'checkbox',
+	) );
 }
 add_action( 'cmb2_render_post_search_text', 'cmb2_post_search_render_field', 10, 5 );
 
@@ -133,6 +139,7 @@ function cmb2_post_search_render_js(  $cmb_id, $object_id, $object_type, $cmb ) 
 						ps               : search.$input.val(),
 						action           : 'find_posts',
 						cmb2_post_search : true,
+						post_search_cpt  : search.postType,
 						_ajax_nonce      : $('#_ajax_nonce').val()
 					}
 				}).always( function() {
@@ -145,7 +152,12 @@ function cmb2_post_search_render_js(  $cmb_id, $object_id, $object_type, $cmb ) 
 						search.$response.text( l10n.error );
 					}
 
-					var data = response.data.replace( /type="radio"/gi, 'type="checkbox"' );
+					var data = response.data;
+
+					if ( 'checkbox' === window.cmb2_post_search.selectType ) {
+						data = data.replace( /type="radio"/gi, 'type="checkbox"' );
+					}
+
 					search.$response.html( data );
 
 				}).fail( function() {
@@ -185,6 +197,8 @@ function cmb2_post_search_render_js(  $cmb_id, $object_id, $object_type, $cmb ) 
 
 		function openSearch( evt ) {
 			window.cmb2_post_search.$idInput = $( evt.currentTarget ).parents( '.cmb-type-post-search-text' ).find( '.cmb-td input[type="text"]' );
+			window.cmb2_post_search.postType = window.cmb2_post_search.$idInput.data( 'posttype' );
+			window.cmb2_post_search.selectType = window.cmb2_post_search.$idInput.data( 'selecttype' );
 			window.cmb2_post_search.trigger( 'open' );
 		}
 
@@ -196,3 +210,65 @@ function cmb2_post_search_render_js(  $cmb_id, $object_id, $object_type, $cmb ) 
 	$rendered = true;
 }
 add_action( 'cmb2_after_form', 'cmb2_post_search_render_js', 10, 4 );
+
+function cmb2_post_search_add_post_search_div( $cmb_id, $object_id, $object_type, $cmb ) {
+	static $rendered;
+
+	if ( $rendered ) {
+		return;
+	}
+
+	$fields = $cmb->prop( 'fields' );
+
+	if ( ! is_array( $fields ) ) {
+		return;
+	}
+
+	$not_found = true;
+	foreach ( $fields as $field ) {
+		if ( 'post_search_text' == $field['type'] ) {
+			$not_found = false;
+			break;
+		}
+	}
+
+	if ( $not_found ) {
+		return;
+	}
+
+	require_once(ABSPATH . 'wp-admin/includes/template.php');
+
+	// markup needed for modal
+	find_posts_div();
+
+	$rendered = true;
+}
+add_action( 'cmb2_after_form', 'cmb2_post_search_add_post_search_div', 11, 4 );
+
+
+/**
+ * Set the post type via pre_get_posts
+ * @param  array $query  The posts query
+ */
+function cmb2_post_search_set_post_type( $query ) {
+
+	$query->set( 'post_type', esc_attr( $_POST['post_search_cpt'] ) );
+}
+
+/**
+ * Check to see if we have a post type set and, if so, add the
+ * pre_get_posts action to set the queried post type
+ */
+function cmb2_post_search_wp_ajax_find_posts() {
+	if (
+		defined( 'DOING_AJAX' )
+		&& DOING_AJAX
+		&& isset( $_POST['cmb2_post_search'], $_POST['action'], $_POST['post_search_cpt'] )
+		&& 'find_posts' == $_POST['action']
+		&& ! empty( $_POST['post_search_cpt'] )
+	) {
+
+		add_action( 'pre_get_posts', 'cmb2_post_search_set_post_type' );
+	}
+}
+add_action( 'admin_init', 'cmb2_post_search_wp_ajax_find_posts' );
