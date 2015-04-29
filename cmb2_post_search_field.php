@@ -52,7 +52,7 @@ function cmb2_post_search_render_js(  $cmb_id, $object_id, $object_type, $cmb ) 
 	if ( ! is_admin() ) {
 		// Will need custom styling!
 		// @todo add styles for front-end
-		require_once(ABSPATH . 'wp-admin/includes/template.php');
+		require_once( ABSPATH . 'wp-admin/includes/template.php' );
 		add_action( 'wp_footer', 'find_posts_div' );
 	}
 
