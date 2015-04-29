@@ -9,8 +9,7 @@ Version: 0.2.0
 License: GPLv2
 */
 
-function cmb2_post_search_render_field( $field, $field_escaped_value, $field_object_id, $field_object_type, $field_type ) {
-
+function cmb2_post_search_render_field( $field, $escaped_value, $object_id, $object_type, $field_type ) {
 	$select_type = $field->args( 'select_type' );
 
 	echo $field_type->input( array(
@@ -33,15 +32,15 @@ function cmb2_post_search_render_js(  $cmb_id, $object_id, $object_type, $cmb ) 
 		return;
 	}
 
-	$not_found = true;
+	$has_post_search_field = false;
 	foreach ( $fields as $field ) {
 		if ( 'post_search_text' == $field['type'] ) {
-			$not_found = false;
+			$has_post_search_field = true;
 			break;
 		}
 	}
 
-	if ( $not_found ) {
+	if ( ! $has_post_search_field ) {
 		return;
 	}
 
@@ -50,21 +49,32 @@ function cmb2_post_search_render_js(  $cmb_id, $object_id, $object_type, $cmb ) 
 	wp_enqueue_script( 'jquery' );
 	wp_enqueue_script( 'wp-backbone' );
 
+	if ( ! is_admin() ) {
+		// Will need custom styling!
+		// @todo add styles for front-end
+		require_once(ABSPATH . 'wp-admin/includes/template.php');
+		add_action( 'wp_footer', 'find_posts_div' );
+	}
+
 	// markup needed for modal
 	add_action( 'admin_footer', 'find_posts_div' );
 
+	$error = __( 'An error has occurred. Please reload the page and try again.' );
+	$find  = __( 'Find Posts or Pages' );
+
+	// @TODO this should really be in its own JS file.
 	?>
 	<script type="text/javascript">
 	jQuery(document).ready(function($){
 		'use strict';
 
 		var l10n = {
-			'error' : '<?php _e( 'An error has occurred. Please reload the page and try again.' ); ?>',
-			'find' : '<?php _e( 'Find Posts or Pages' ); ?>'
+			'error' : '<?php echo esc_js( $error ); ?>',
+			'find' : '<?php echo esc_js( $find ) ?>'
 		};
 
 
-		var searchView = window.Backbone.View.extend({
+		var SearchView = window.Backbone.View.extend({
 			el         : '#find-posts',
 			overlaySet : false,
 			$overlay   : false,
@@ -73,10 +83,10 @@ function cmb2_post_search_render_js(  $cmb_id, $object_id, $object_type, $cmb ) 
 
 			events : {
 				'keypress .find-box-search :input' : 'maybeStartSearch',
-				'keyup #find-posts-input'   : 'escClose',
-				'click #find-posts-submit'  : 'selectPost',
-				'click #find-posts-search'  : 'send',
-				'click #find-posts-close'   : 'close',
+				'keyup #find-posts-input'  : 'escClose',
+				'click #find-posts-submit' : 'selectPost',
+				'click #find-posts-search' : 'send',
+				'click #find-posts-close'  : 'close',
 			},
 
 			initialize: function() {
@@ -154,7 +164,7 @@ function cmb2_post_search_render_js(  $cmb_id, $object_id, $object_type, $cmb ) 
 
 					var data = response.data;
 
-					if ( 'checkbox' === window.cmb2_post_search.selectType ) {
+					if ( 'checkbox' === search.selectType ) {
 						data = data.replace( /type="radio"/gi, 'type="checkbox"' );
 					}
 
@@ -168,14 +178,9 @@ function cmb2_post_search_render_js(  $cmb_id, $object_id, $object_type, $cmb ) 
 			selectPost: function( evt ) {
 				evt.preventDefault();
 
-				var inputType = 'checkbox';
+				this.$checked = $( '#find-posts-response input[type="' + this.selectType + '"]:checked' );
 
-				if ( 'radio' === window.cmb2_post_search.selectType ) {
-					inputType = 'radio';
-				}
-
-				this.$checked = $( '#find-posts-response input[type="'+inputType+'"]:checked' );
-				var checked   = this.$checked.map(function() { return this.value; }).get();
+				var checked = this.$checked.map(function() { return this.value; }).get();
 
 				if ( ! checked.length ) {
 					this.close();
@@ -195,17 +200,19 @@ function cmb2_post_search_render_js(  $cmb_id, $object_id, $object_type, $cmb ) 
 
 		});
 
-		window.cmb2_post_search = new searchView();
+		window.cmb2_post_search = new SearchView();
 
 		$( '.cmb-type-post-search-text .cmb-td input[type="text"]' ).after( '<div title="'+ l10n.find +'" style="color: #999;margin: .3em 0 0 2px; cursor: pointer;" class="dashicons dashicons-search"></div>');
 
 		$( '.cmb-type-post-search-text .cmb-td .dashicons-search' ).on( 'click', openSearch );
 
 		function openSearch( evt ) {
-			window.cmb2_post_search.$idInput = $( evt.currentTarget ).parents( '.cmb-type-post-search-text' ).find( '.cmb-td input[type="text"]' );
-			window.cmb2_post_search.postType = window.cmb2_post_search.$idInput.data( 'posttype' );
-			window.cmb2_post_search.selectType = window.cmb2_post_search.$idInput.data( 'selecttype' );
-			window.cmb2_post_search.trigger( 'open' );
+			var search = window.cmb2_post_search;
+			search.$idInput   = $( evt.currentTarget ).parents( '.cmb-type-post-search-text' ).find( '.cmb-td input[type="text"]' );
+			search.postType   = search.$idInput.data( 'posttype' );
+			search.selectType = 'radio' == search.$idInput.data( 'selecttype' ) ? 'radio' : 'checkbox';
+
+			search.trigger( 'open' );
 		}
 
 
@@ -217,46 +224,11 @@ function cmb2_post_search_render_js(  $cmb_id, $object_id, $object_type, $cmb ) 
 }
 add_action( 'cmb2_after_form', 'cmb2_post_search_render_js', 10, 4 );
 
-function cmb2_post_search_add_post_search_div( $cmb_id, $object_id, $object_type, $cmb ) {
-	static $rendered;
-
-	if ( $rendered ) {
-		return;
-	}
-
-	$fields = $cmb->prop( 'fields' );
-
-	if ( ! is_array( $fields ) ) {
-		return;
-	}
-
-	$not_found = true;
-	foreach ( $fields as $field ) {
-		if ( 'post_search_text' == $field['type'] ) {
-			$not_found = false;
-			break;
-		}
-	}
-
-	if ( $not_found ) {
-		return;
-	}
-
-	require_once(ABSPATH . 'wp-admin/includes/template.php');
-
-	// markup needed for modal
-	find_posts_div();
-
-	$rendered = true;
-}
-add_action( 'cmb2_after_form', 'cmb2_post_search_add_post_search_div', 11, 4 );
-
 /**
  * Set the post type via pre_get_posts
- * @param  array $query  The posts query
+ * @param  array $query  The query instance
  */
 function cmb2_post_search_set_post_type( $query ) {
-
 	$query->set( 'post_type', esc_attr( $_POST['post_search_cpt'] ) );
 }
 
@@ -272,7 +244,6 @@ function cmb2_post_search_wp_ajax_find_posts() {
 		&& 'find_posts' == $_POST['action']
 		&& ! empty( $_POST['post_search_cpt'] )
 	) {
-
 		add_action( 'pre_get_posts', 'cmb2_post_search_set_post_type' );
 	}
 }
