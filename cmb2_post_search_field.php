@@ -168,7 +168,13 @@ function cmb2_post_search_render_js(  $cmb_id, $object_id, $object_type, $cmb ) 
 			selectPost: function( evt ) {
 				evt.preventDefault();
 
-				this.$checked = $( '#find-posts-response input[type="checkbox"]:checked' );
+				var inputType = 'checkbox';
+
+				if ( 'radio' === window.cmb2_post_search.selectType ) {
+					inputType = 'radio';
+				}
+
+				this.$checked = $( '#find-posts-response input[type="'+inputType+'"]:checked' );
 				var checked   = this.$checked.map(function() { return this.value; }).get();
 
 				if ( ! checked.length ) {
@@ -244,7 +250,6 @@ function cmb2_post_search_add_post_search_div( $cmb_id, $object_id, $object_type
 	$rendered = true;
 }
 add_action( 'cmb2_after_form', 'cmb2_post_search_add_post_search_div', 11, 4 );
-
 
 /**
  * Set the post type via pre_get_posts
