@@ -53,7 +53,7 @@ function cmb2_post_search_render_js(  $cmb_id, $object_id, $object_type, $cmb ) 
 		// Will need custom styling!
 		// @todo add styles for front-end
 		require_once( ABSPATH . 'wp-admin/includes/template.php' );
-		add_action( 'wp_footer', 'find_posts_div' );
+		do_action( 'cmb2_post_search_field_add_find_posts_div' );
 	}
 
 	// markup needed for modal
@@ -223,6 +223,14 @@ function cmb2_post_search_render_js(  $cmb_id, $object_id, $object_type, $cmb ) 
 	$rendered = true;
 }
 add_action( 'cmb2_after_form', 'cmb2_post_search_render_js', 10, 4 );
+
+/**
+ * Add the find posts div via a hook so we can relocate it manually
+ */
+function cmb2_post_search_field_add_find_posts_div() {
+	add_action( 'wp_footer', 'find_posts_div' );
+}
+add_action( 'cmb2_post_search_field_add_find_posts_div', 'cmb2_post_search_field_add_find_posts_div' );
 
 /**
  * Set the post type via pre_get_posts
