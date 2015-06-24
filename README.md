@@ -7,24 +7,23 @@ Adds a new text field type (with a button), `post_search_text` that adds a quick
 
 ##Example
 
-```
-//Classic CMB2 declaration
-$cmb_task = new_cmb2_box( array(
-	'id' => 'metabox',
-	'title' => __( 'Post Info' ),
+```php
+// Classic CMB2 declaration
+$cmb = new_cmb2_box( array(
+	'id'           => 'prefix-metabox-id',
+	'title'        => __( 'Post Info' ),
 	'object_types' => array( 'post', ), // Post type
-	'context' => 'normal',
-	'priority' => 'high',
-	'show_names' => true,
 ) );
-//Add new field
-$cmb_task->add_field( array(
-	'name' => __( 'Related post' ),
-	'id' => 'related_post',
-	'type' => 'post_search_text', //This field type
-	//post type also as array
-	'post_type' => 'post',
-	'select_type' => 'radio' //or checkbox, used in the modal view to select the post type
+
+// Add new field
+$cmb->add_field( array(
+	'name'        => __( 'Related post' ),
+	'id'          => 'prefix_related_post',
+	'type'        => 'post_search_text', // This field type
+	// post type also as array
+	'post_type'   => 'post',
+	// or checkbox, used in the modal view to select the post type
+	'select_type' => 'radio'
 ) );
 ```
 
