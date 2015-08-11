@@ -19,6 +19,22 @@ function cmb2_post_search_render_field( $field, $escaped_value, $object_id, $obj
 }
 add_action( 'cmb2_render_post_search_text', 'cmb2_post_search_render_field', 10, 5 );
 
+function cmb2_has_post_search_text_field( $fields ) {
+
+	foreach ( $fields as $field ) {
+		if ( isset( $field['fields'] ) ) {
+			if ( cmb2_has_post_search_text_field( $field['fields'] ) ) {
+				return true;
+			}
+		}
+		if ( 'post_search_text' == $field['type'] ) {
+			return true;
+		}
+	}
+
+	return false;
+}
+
 function cmb2_post_search_render_js(  $cmb_id, $object_id, $object_type, $cmb ) {
 	static $rendered;
 
@@ -32,13 +48,7 @@ function cmb2_post_search_render_js(  $cmb_id, $object_id, $object_type, $cmb ) 
 		return;
 	}
 
-	$has_post_search_field = false;
-	foreach ( $fields as $field ) {
-		if ( 'post_search_text' == $field['type'] ) {
-			$has_post_search_field = true;
-			break;
-		}
-	}
+	$has_post_search_field = cmb2_has_post_search_text_field( $fields );
 
 	if ( ! $has_post_search_field ) {
 		return;
