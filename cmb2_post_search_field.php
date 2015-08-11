@@ -83,7 +83,6 @@ function cmb2_post_search_render_js(  $cmb_id, $object_id, $object_type, $cmb ) 
 			'find' : '<?php echo esc_js( $find ) ?>'
 		};
 
-
 		var SearchView = window.Backbone.View.extend({
 			el         : '#find-posts',
 			overlaySet : false,
@@ -212,7 +211,9 @@ function cmb2_post_search_render_js(  $cmb_id, $object_id, $object_type, $cmb ) 
 
 		window.cmb2_post_search = new SearchView();
 
-		$( '.cmb-type-post-search-text .cmb-td input[type="text"]' ).after( '<div title="'+ l10n.find +'" style="color: #999;margin: .3em 0 0 2px; cursor: pointer;" class="dashicons dashicons-search"></div>');
+		$( '.cmb-type-post-search-text .cmb-td input[type="text"]' ).each( function() {
+			$( this ).after( '<div title="'+ l10n.find +'" style="color: #999;margin: .3em 0 0 2px; cursor: pointer;" class="dashicons dashicons-search"></div>');
+		});
 
 		$( '.cmb-type-post-search-text .cmb-td .dashicons-search' ).on( 'click', openSearch );
 
