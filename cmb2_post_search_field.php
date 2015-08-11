@@ -121,8 +121,10 @@ function cmb2_post_search_render_js(  $cmb_id, $object_id, $object_type, $cmb ) 
 				this.$el.show();
 
 				var search = this;
-				this.$el.find( '#find-posts-head' ).text( function( index, text ) {
-					return text.replace( text.trim(), search.findtxt );
+				this.$el.find( '#find-posts-head' ).html( function( index, html ) {
+					// WP, why you so dumb? (why isn't text in its own dom node?)
+					var replace = search.findtxt + '<div id="find-posts-close"></div>';
+					return html.replace( html, replace );
 				} );
 
 				this.$input.focus();
