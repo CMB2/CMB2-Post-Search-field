@@ -118,13 +118,8 @@ function cmb2_post_search_render_js(  $cmb_id, $object_id, $object_type, $cmb ) 
 			open: function() {
 				this.$response.html('');
 
-				this.$el.show();
-
-				var search = this;
-				this.$el.find( '#find-posts-head' ).html( function( index, html ) {
-					// WP, why you so dumb? (why isn't text in its own dom node?)
-					return search.findtxt + '<div id="find-posts-close"></div>';
-				} );
+				// WP, why you so dumb? (why isn't text in its own dom node?)
+				this.$el.show().find( '#find-posts-head' ).html( this.findtxt + '<div id="find-posts-close"></div>' );
 
 				this.$input.focus();
 
