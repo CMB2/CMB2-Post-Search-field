@@ -208,15 +208,11 @@ function cmb2_post_search_render_js(  $cmb_id, $object_id, $object_type, $cmb ) 
 
 		window.cmb2_post_search = new SearchView();
 
-		$( '.cmb-type-post-search-text .cmb-td input[type="text"]' ).each( function() {
-			var $this = $( this );
-			var data = $this.data( 'search' );
-			$this.after( '<div title="'+ data.findtxt +'" style="color: #999;margin: .3em 0 0 2px; cursor: pointer;" class="dashicons dashicons-search"></div>');
-		});
+		window.cmb2_post_search.closeSearch = function() {
+			window.cmb2_post_search.trigger( 'close' );
+		};
 
-		$( '.cmb2-wrap' ).on( 'click', '.cmb-type-post-search-text .cmb-td .dashicons-search', openSearch );
-
-		function openSearch( evt ) {
+		window.cmb2_post_search.openSearch = function( evt ) {
 			var search = window.cmb2_post_search;
 
 			search.$idInput = $( evt.currentTarget ).parents( '.cmb-type-post-search-text' ).find( '.cmb-td input[type="text"]' );
@@ -224,10 +220,28 @@ function cmb2_post_search_render_js(  $cmb_id, $object_id, $object_type, $cmb ) 
 			$.extend( search, search.$idInput.data( 'search' ) );
 
 			search.trigger( 'open' );
-		}
+		};
+
+		window.cmb2_post_search.addSearchButtons = function() {
+			var $this = $( this );
+			var data = $this.data( 'search' );
+			$this.after( '<div title="'+ data.findtxt +'" class="dashicons dashicons-search cmb2-post-search-button"></div>');
+		};
+
+		$( '.cmb-type-post-search-text .cmb-td input[type="text"]' ).each( window.cmb2_post_search.addSearchButtons );
+
+		$( '.cmb2-wrap' ).on( 'click', '.cmb-type-post-search-text .cmb-td .dashicons-search', window.cmb2_post_search.openSearch );
+		$( 'body' ).on( 'click', '.ui-find-overlay', window.cmb2_post_search.closeSearch );
 
 	});
 	</script>
+	<style type="text/css" media="screen">
+		.cmb2-post-search-button {
+			color: #999;
+			margin: .3em 0 0 2px;
+			cursor: pointer;
+		}
+	</style>
 	<?php
 
 	$rendered = true;
