@@ -156,7 +156,7 @@ function cmb2_post_search_render_js(  $cmb_id, $object_id, $object_type, $cmb ) 
 						action           : 'find_posts',
 						cmb2_post_search : true,
 						post_search_cpt  : search.posttype,
-						_ajax_nonce      : $('#_ajax_nonce').val()
+						_ajax_nonce      : $('#find-posts #_ajax_nonce').val()
 					}
 				}).always( function() {
 
