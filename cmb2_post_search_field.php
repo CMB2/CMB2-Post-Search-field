@@ -146,7 +146,7 @@ function cmb2_post_search_render_js(  $cmb_id, $object_id, $object_type, $cmb ) 
 			send: function() {
 
 				var search = this;
-				search.$spinner.show();
+				search.$spinner.addClass('is-active');
 
 				$.ajax( ajaxurl, {
 					type     : 'POST',
@@ -160,7 +160,7 @@ function cmb2_post_search_render_js(  $cmb_id, $object_id, $object_type, $cmb ) 
 					}
 				}).always( function() {
 
-					search.$spinner.hide();
+					search.$spinner.removeClass('is-active');
 
 				}).done( function( response ) {
 
