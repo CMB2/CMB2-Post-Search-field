@@ -261,7 +261,9 @@ add_action( 'cmb2_post_search_field_add_find_posts_div', 'cmb2_post_search_field
  * @param  array $query  The query instance
  */
 function cmb2_post_search_set_post_type( $query ) {
-	$query->set( 'post_type', esc_attr( $_POST['post_search_cpt'] ) );
+	$types = $_POST['post_search_cpt'];
+	$types = is_array( $types ) ? array_map( 'esc_attr', $types ) : esc_attr( $types );
+	$query->set( 'post_type', $types );
 }
 
 /**
