@@ -5,7 +5,7 @@ Plugin URI: http://webdevstudios.com
 Description: Custom field for CMB2 which adds a post-search dialog for searching/attaching other post IDs
 Author: WebDevStudios
 Author URI: http://webdevstudios.com
-Version: 0.2.2
+Version: 0.2.3
 License: GPLv2
 */
 
