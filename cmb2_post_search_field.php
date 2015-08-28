@@ -10,14 +10,11 @@ License: GPLv2
 */
 
 function cmb2_post_search_render_field( $field, $escaped_value, $object_id, $object_type, $field_type ) {
-	$select_type = $field->args( 'select_type' );
-	$select_behavior = $field->args( 'select_behavior' );
-
 	echo $field_type->input( array(
 		'data-search' => json_encode( array(
 			'posttype'   => $field->args( 'post_type' ),
-			'selecttype' => 'radio' == $select_type ? 'radio' : 'checkbox',
-			'selectbehavior' => 'replace' == $select_behavior ? 'replace' : 'add',
+			'selecttype' => 'radio' == $field->args( 'select_type' ) ? 'radio' : 'checkbox',
+			'selectbehavior' => 'replace' == $field->args( 'select_behavior' ) ? 'replace' : 'add',
 			'errortxt'   => esc_attr( $field_type->_text( 'error_text', __( 'An error has occurred. Please reload the page and try again.' ) ) ),
 			'findtxt'    => esc_attr( $field_type->_text( 'find_text', __( 'Find Posts or Pages' ) ) ),
 		) ),
@@ -199,15 +196,16 @@ function cmb2_post_search_render_js(  $cmb_id, $object_id, $object_type, $cmb ) 
 			},
 
 			handleSelected: function( checked ) {
+				checked = checked.join( ', ' );
+
 				if ( 'add' === this.selectbehavior ) {
 					var existing = this.$idInput.val();
-					existing = existing ? existing + ', ' : '';
-					this.$idInput.val( existing + checked.join( ', ' ) );
-				}
-				else {
-					this.$idInput.val( checked.join( ', ' ) );
+					if ( existing ) {
+						checked = existing + ', ' + checked;
+					}
 				}
 
+				this.$idInput.val( checked );
 				this.close();
 			}
 
