@@ -24,6 +24,8 @@ $cmb->add_field( array(
 	'post_type'   => 'post',
 	// or checkbox, used in the modal view to select the post type
 	'select_type' => 'radio'
+	// Will replace any selection with selection from modal. Default is 'add'
+	'select_behavior' => 'replace'
 ) );
 ```
 
