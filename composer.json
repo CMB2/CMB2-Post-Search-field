@@ -1,0 +1,26 @@
+{
+    "name": "webdevstudios/cmb2-post-search-field",
+    "description": "Custom field for CMB2 which adds a post-search dialog for searching/attaching other post IDs.",
+    "license": "GPL-2.0+",
+    "authors": [
+        {
+            "name": "WebDevStudios",
+            "email": "contact@webdevstudios.com",
+            "homepage": "https://github.com/WebDevStudios",
+            "role": "Developer"
+        }
+    ],
+    "keywords": ["wordpress", "plugin", "metabox","search","field"],
+    "homepage": "https://github.com/WebDevStudios/CMB2",
+    "type": "wordpress-plugin",
+    "support": {
+        "issues": "https://github.com/WebDevStudios/CMB2-Post-Search-field/issues",
+        "source": "https://github.com/WebDevStudios/CMB2-Post-Search-field"
+    },
+    "require": {
+        "php": ">5.2.4"
+    },
+    "suggest": {
+        "composer/installers": "~1.0"
+    }
+}
