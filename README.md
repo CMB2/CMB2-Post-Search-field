@@ -5,7 +5,7 @@ Custom field for CMB2 which adds a post-search dialog for searching/attaching ot
 
 Adds a new text field type (with a button), `post_search_text` that adds a quick post search dialog for saving post IDs to a text input.
 
-##Example
+## Example
 
 ```php
 // Classic CMB2 declaration
@@ -28,5 +28,15 @@ $cmb->add_field( array(
 	'select_behavior' => 'replace',
 ) );
 ```
+
+## Screenshots
+
+1. Field display
+![Field display](https://raw.githubusercontent.com/WebDevStudios/CMB2-Post-Search-field/master/post-search-field.png)
+
+2. Search Modal
+![Search Modal](https://raw.githubusercontent.com/WebDevStudios/CMB2-Post-Search-field/master/post-search-dialog.png)
+
+----
 
 If you're looking for a more general way to attach posts (or other custom post types) with a drag and drop interface, you might consider [CMB2 Attached Posts Field](https://github.com/WebDevStudios/cmb2-attached-posts) instead.
