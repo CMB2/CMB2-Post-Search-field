@@ -31,10 +31,10 @@ $cmb->add_field( array(
 
 ## Screenshots
 
-1. Field display
+1. Field display  
 ![Field display](https://raw.githubusercontent.com/WebDevStudios/CMB2-Post-Search-field/master/post-search-field.png)
 
-2. Search Modal
+2. Search Modal  
 ![Search Modal](https://raw.githubusercontent.com/WebDevStudios/CMB2-Post-Search-field/master/post-search-dialog.png)
 
 ----
