@@ -319,15 +319,15 @@ CMB2_Post_Search_field::get_instance();
 
 // preserve a couple functions for back-compat.
 
-function method_name( $args ) {
-
-}
 
 function cmb2_post_search_render_field( $field, $escaped_value, $object_id, $object_type, $field_type ) {
 	_deprecated_function( __FUNCTION__, '0.2.4', 'Please access these methods through the CMB2_Post_Search_field::get_instance() object.' );
 
 	return CMB2_Post_Search_field::get_instance()->render_field( $field, $escaped_value, $object_id, $object_type, $field_type );
 }
+
+// Remoe old versions.
+remove_action( 'cmb2_render_post_search_text', 'cmb2_post_search_render_field', 10, 5 );
 
 function cmb2_has_post_search_text_field( $fields ) {
 	_deprecated_function( __FUNCTION__, '0.2.4', 'Please access these methods through the CMB2_Post_Search_field::get_instance() object.' );
