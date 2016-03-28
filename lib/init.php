@@ -330,6 +330,7 @@ if ( ! function_exists( 'cmb2_post_search_render_field' ) ) {
 
 // Remove old versions.
 remove_action( 'cmb2_render_post_search_text', 'cmb2_post_search_render_field', 10, 5 );
+remove_action( 'cmb2_after_form', 'cmb2_post_search_render_js', 10, 4 );
 
 if ( ! function_exists( 'cmb2_has_post_search_text_field' ) ) {
 	function cmb2_has_post_search_text_field( $fields ) {
