@@ -5,7 +5,7 @@
  * Description: Custom field for CMB2 which adds a post-search dialog for searching/attaching other post IDs
  * Author: WebDevStudios
  * Author URI: http://webdevstudios.com
- * Version: 0.2.4
+ * Version: 0.2.5
  * License: GPLv2
 */
 
@@ -19,7 +19,7 @@
  * @author    WebDevstudios <contact@webdevstudios.com>
  * @copyright 2016 WebDevstudios <contact@webdevstudios.com>
  * @license   GPL-2.0+
- * @version   0.2.4
+ * @version   0.2.5
  * @link      https://github.com/WebDevStudios/CMB2-Post-Search-field
  * @since     0.2.4
  */
@@ -46,7 +46,7 @@
  * Loader versioning: http://jtsternberg.github.io/wp-lib-loader/
  */
 
-if ( ! class_exists( 'CMB2_Post_Search_field_024', false ) ) {
+if ( ! class_exists( 'CMB2_Post_Search_field_025', false ) ) {
 
 	/**
 	 * Versioned loader class-name
@@ -57,18 +57,18 @@ if ( ! class_exists( 'CMB2_Post_Search_field_024', false ) ) {
 	 * @package  CMB2_Post_Search_field
 	 * @author   WebDevstudios <contact@webdevstudios.com>
 	 * @license  GPL-2.0+
-	 * @version  0.2.4
+	 * @version  0.2.5
 	 * @link     https://github.com/WebDevStudios/CMB2-Post-Search-field
 	 * @since    0.2.4
 	 */
-	class CMB2_Post_Search_field_024 {
+	class CMB2_Post_Search_field_025 {
 
 		/**
 		 * CMB2_Post_Search_field version number
 		 * @var   string
 		 * @since 0.2.4
 		 */
-		const VERSION = '0.2.4';
+		const VERSION = '0.2.5';
 
 		/**
 		 * Current version hook priority.
@@ -77,7 +77,7 @@ if ( ! class_exists( 'CMB2_Post_Search_field_024', false ) ) {
 		 * @var   int
 		 * @since 0.2.4
 		 */
-		const PRIORITY = 9999;
+		const PRIORITY = 9998;
 
 		/**
 		 * Starts the version checking process.
@@ -155,5 +155,5 @@ if ( ! class_exists( 'CMB2_Post_Search_field_024', false ) ) {
 	}
 
 	// Kick it off.
-	new CMB2_Post_Search_field_024;
+	new CMB2_Post_Search_field_025;
 }

@@ -9,7 +9,7 @@
  * @package  CMB2_Post_Search_field
  * @author   WebDevstudios <contact@webdevstudios.com>
  * @license  GPL-2.0+
- * @version  0.2.4
+ * @version  0.2.5
  * @link     https://github.com/WebDevStudios/CMB2-Post-Search-field
  * @since    0.2.4
  */
@@ -217,7 +217,7 @@ class CMB2_Post_Search_field {
 						}
 					}
 
-					this.$idInput.val( checked );
+					this.$idInput.val( checked ).trigger( 'change' );
 					this.close();
 				}
 
